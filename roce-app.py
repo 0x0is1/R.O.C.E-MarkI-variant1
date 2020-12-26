@@ -236,4 +236,5 @@ async def on_command_error(ctx, error):
         return
 
 auth_token = os.environ.get('ROCE_BOT_TOKEN')
-bot.run(auth_token)
+#bot.run(auth_token)
+print(bypass_authenication())
