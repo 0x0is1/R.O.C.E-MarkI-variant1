@@ -17,7 +17,7 @@ def bypass_authenication():
         'Accept': '*/*',
         'Accept-Language': 'en-US,en;q=0.5',
         'Accept-Encoding': 'gzip, deflate, br',
-        'authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
+        'authorization': os.environ.get('BEARER_TOKEN'),
         'content-type': 'application/x-www-form-urlencoded',
         'Origin': 'https://twitter.com',
         'DNT': '1',
