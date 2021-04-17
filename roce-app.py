@@ -119,16 +119,20 @@ async def main_fun():
     try:
         last_tweet = list(json.loads(sort_data()).values())[19]
         if last_tweet['id_str'] != previous_tweet_id:
+            embed = discord.Embed(title='ROCE News', color=0x03f8fc)
             text = last_tweet['full_text'].split('https://')[0]
             img_url = last_tweet['entities']['media'][0]['media_url_https']
-
+            dhurl = last_tweet['entities']['urls'][0]['url']
+            hurl= last_tweet['entities']['urls'][0]['expanded_url']
+            embed.add_field(name='Headline', value=text, inline=False)
+            embed.set_image(url=img_url)
+            embed.add_field(name='Visit for more:', value='[{}]({})'.format(dhurl, hurl))
             channels = json.load(open('info.json', 'r'))[0]
             channel_ids = list(channels.keys())
-
             for channel_id in channel_ids:
                 if channels[channel_id] == 'ON':
                     channel_ob = bot.get_channel(int(channel_id))
-                    await channel_ob.send(text + '\n' + img_url)
+                    await channel_ob.send(embed=embed)
             previous_tweet_id = last_tweet['id_str']
             
     except KeyError:
@@ -138,10 +142,6 @@ async def main_fun():
 
     except requests.exceptions.SSLError:
         refresh_time = 10
-
-    except Exception as e:
-        print('Error: ' + str(e))
-
 
 @bot.command()
 @commands.has_role('starks')
