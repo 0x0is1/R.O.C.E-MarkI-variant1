@@ -1,9 +1,8 @@
 from discord.ext.commands.errors import CommandInvokeError, CommandNotFound
 import requests
-import json
 from discord.ext import commands, tasks
 import discord
-import os
+import os,json
 
 refresh_time = 5
 
@@ -27,7 +26,7 @@ def bypass_authenication():
         'TE': 'Trailers'
     }
     response = requests.post(authentication_url, headers=auth_header)
-    return response.content.decode('utf-8')
+    return response.json()
 
 
 headers = {
@@ -74,12 +73,12 @@ def register_text_channel(channel_id, status, regkey):
 
 def fetch_n_parse_data():
     response = requests.get(url, headers=headers)
-    data = response.content.decode('utf-8')
-    parsed_data = json.loads(data)['globalObjects']['tweets']
+    data = response.json()
+    parsed_data = data['globalObjects']['tweets']
     return parsed_data
 
 def sort_data():
-    return json.dumps(fetch_n_parse_data(), sort_keys=True)
+    return dict(sorted(fetch_n_parse_data().items()))
 
 
 def help_embed():
@@ -117,7 +116,7 @@ async def main_fun():
     global previous_tweet_id
     global refresh_time
     try:
-        last_tweet = list(json.loads(sort_data()).values())[19]
+        last_tweet = list(sort_data().values())[19]
         if last_tweet['id_str'] != previous_tweet_id:
             embed = discord.Embed(title='ROCE News', color=0x03f8fc)
             text = last_tweet['full_text'].split('https://')[0]
@@ -137,7 +136,7 @@ async def main_fun():
             
     except KeyError:
         print('Reauthorizing Headers.')
-        headers['x-guest-token'] = json.loads(bypass_authenication())['guest_token']
+        headers['x-guest-token'] = bypass_authenication()['guest_token']
         print('Completed.')
 
     except requests.exceptions.SSLError:
